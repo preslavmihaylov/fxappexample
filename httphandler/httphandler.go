@@ -20,11 +20,6 @@ func New(s *http.ServeMux, logger *zap.SugaredLogger) *Handler {
 	return &h
 }
 
-// ListenAndServe http traffic on the specified port
-func (h *Handler) ListenAndServe(port string) {
-	http.ListenAndServe(port, h.mux)
-}
-
 // RegisterRoutes for all http endpoints
 func (h *Handler) registerRoutes() {
 	h.mux.HandleFunc("/", h.hello)

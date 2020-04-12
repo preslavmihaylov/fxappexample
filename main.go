@@ -35,6 +35,8 @@ func main() {
 	defer logger.Sync()
 	slogger := logger.Sugar()
 
-	handler := httphandler.New(http.NewServeMux(), slogger)
-	handler.ListenAndServe(conf.ApplicationConfig.Address)
+	mux := http.NewServeMux()
+	httphandler.New(mux, slogger)
+
+	http.ListenAndServe(conf.ApplicationConfig.Address, mux)
 }
