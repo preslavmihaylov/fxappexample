@@ -50,19 +50,20 @@ func main() {
 		fx.Provide(ProvideConfig),
 		fx.Provide(ProvideLogger),
 		fx.Provide(http.NewServeMux),
-		fx.Provide(httphandler.New),
+		fx.Invoke(httphandler.New),
 		fx.Invoke(registerHooks),
 	).Run()
 }
 
 func registerHooks(
 	lifecycle fx.Lifecycle,
-	logger *zap.SugaredLogger, cfg *Config, handler *httphandler.Handler,
+	logger *zap.SugaredLogger, cfg *Config, mux *http.ServeMux,
 ) {
 	lifecycle.Append(
 		fx.Hook{
 			OnStart: func(context.Context) error {
-				go handler.ListenAndServe(cfg.ApplicationConfig.Address)
+				logger.Info("Listening on ", cfg.ApplicationConfig.Address)
+				go http.ListenAndServe(cfg.ApplicationConfig.Address, mux)
 				return nil
 			},
 			OnStop: func(context.Context) error {
